@@ -1,0 +1,58 @@
+﻿version: "3"
+services:
+  doctor-ui:
+    image: doctor-ui
+    build:
+      context: .
+      dockerfile: DoctorUI/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - patient-service
+  patient-ui:
+    image: patient-ui
+    build:
+      context: .
+      dockerfile: PatientUI/Dockerfile
+    ports:
+      - "9090:80"
+    depends_on:
+      - measurement-service
+  measurement-service:
+    image: measurement-service
+    build:
+      context: .
+      dockerfile: MeasurementService/Dockerfile
+    ports:
+      - "9091:80"
+    depends_on:
+      - measurement-db
+  patient-service:
+    image: patient-service
+    build:
+      context: .
+      dockerfile: PatientService/Dockerfile
+    ports:
+      - "8081:80"
+    depends_on:
+      - patient-db
+      - measurement-service
+  measurement-db:
+    image: mongo:latest
+    container_name: measurement-db
+    ports:
+      - "27016:27017"
+    volumes:
+      - measurement_data:/data/db
+  patient-db:
+    image: mongo:latest
+    container_name: patient-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - patient_data:/data/db
+volumes:
+  measurement_data:
+  patient_data:
+
+    

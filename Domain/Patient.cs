@@ -1,8 +1,15 @@
-﻿namespace Domain;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
-public class Patient
-{
-    public string Ssn { get; set; }
-    public string Mail { get; set; }
-    public string Name { get; set; }
+namespace Domain;
+
+public class Patient {
+    [BsonElement("Ssn")]
+    public string Ssn { get; set; } = default!;
+    
+    [BsonElement("Mail")]
+    public string Mail { get; set; } = default!;
+    
+    [BsonElement("Name")]
+    public string Name { get; set; } = default!;
 }

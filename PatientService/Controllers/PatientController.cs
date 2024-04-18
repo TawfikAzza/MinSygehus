@@ -27,12 +27,24 @@ public class PatientController : ControllerBase {
 
     //The measurement boolean is there to allow the client to decide if they want to include the measurements in the response
     [HttpGet]
-    public ActionResult<Patient> GetPatient(string ssn, bool measurement = false) {
-        return Ok();
+    public async Task<ActionResult<Patient>> GetPatient(string ssn, bool measurement = false) {
+        var result = await _patientManager.GetBySsn(ssn);
+
+        if (result is null) {
+            return BadRequest("Patient not found");
+        }
+
+        return Ok(result);
     }
 
     [HttpDelete]
-    public IActionResult DeletePatient(string ssn) {
-        return Ok();
+    public async Task<IActionResult> DeletePatient(string ssn) {
+        var result = await _patientManager.DeleteBySsn(ssn);
+
+        if (!result) {
+            return BadRequest($"Couldn't delete the patient with ssn: {ssn}");
+        }
+
+        return Ok($"Deleted patient with ssn: {ssn}");
     }
 }

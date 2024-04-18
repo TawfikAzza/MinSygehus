@@ -14,4 +14,12 @@ public class PatientManager {
     public async Task<Patient?> Create(Patient patient) {
         return await _patientRepository.Create(patient);
     }
+
+    public async Task<Patient?> GetBySsn(string ssn) {
+        return await _patientRepository.GetBySsn(ssn);
+    }
+    
+    public async Task<bool> DeleteBySsn(string ssn) {
+        return await _patientRepository.DeleteBySsn(ssn);
+    }
 }

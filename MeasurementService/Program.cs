@@ -27,8 +27,8 @@ builder.Services.AddCors(options =>
         policy  =>
         {
             policy.WithOrigins("http://localhost:9099", //PatientUI PROD
-                                "http://localhost:8080", //DoctorUI PROD
-                                "http://localhost:5007") //DEV
+                                "http://localhost:8088", //DoctorUI PROD
+                                "http://localhost:5173") //DEV
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

@@ -3,10 +3,10 @@ services:
   doctor-ui:
     image: doctor-ui
     build:
-      context: .
-      dockerfile: DoctorUI/Dockerfile
+      context: DoctorUI
+      dockerfile: Dockerfile
     ports:
-      - "8088:80"
+      - "8088:8080"
     depends_on:
       - patient-service
     networks:

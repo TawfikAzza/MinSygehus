@@ -23,6 +23,7 @@ namespace MeasurementService.Controllers
         {
             var measurement = new Measurement
             {
+                Ssn = dto.Ssn,
                 Id = dto.Id,
                 Date = DateTime.UtcNow,
                 Systolic = dto.Systolic,

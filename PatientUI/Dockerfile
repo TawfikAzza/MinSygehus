@@ -1,18 +1,22 @@
-﻿FROM mcr.microsoft.com/dotnet/runtime:7.0 AS base
+FROM node:lts-alpine
+
+# install simple http server for serving static content
+RUN npm install -g http-server
+
+# make the 'app' folder the current working directory
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
-COPY ["PatientUI/PatientUI.csproj", "PatientUI/"]
-RUN dotnet restore "PatientUI/PatientUI.csproj"
+# copy both 'package.json' and 'package-lock.json' (if available)
+COPY package*.json ./
+
+# install project dependencies
+RUN npm install
+
+# copy project files and folders to the current working directory (i.e. 'app' folder)
 COPY . .
-WORKDIR "/src/PatientUI"
-RUN dotnet build "PatientUI.csproj" -c Release -o /app/build
 
-FROM build AS publish
-RUN dotnet publish "PatientUI.csproj" -c Release -o /app/publish
+# build app for production with minification
+RUN npm run build
 
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "PatientUI.dll"]
+EXPOSE 8080
+CMD [ "http-server", "dist" ]

@@ -16,6 +16,7 @@ builder.Services.AddDbContext<DatabaseContext>();
 
 var connectionString = "mongodb://measurement-db:27017";
 var databaseName = "measurement-db";
+var allowOriginsPolicy = "_allowOriginsPolicy";
 
 var client = new MongoClient(connectionString);
 var database = client.GetDatabase(databaseName);
@@ -34,6 +35,19 @@ builder.Services.AddScoped<MeasurementRepository>(provider =>
     return new MeasurementRepository(client, database);
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: allowOriginsPolicy,
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:9099", //PatientUI PROD
+                                "http://localhost:8080", //DoctorUI PROD
+                                "http://localhost:5173") //DEV
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,5 +61,7 @@ var app = builder.Build();
 //app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors(allowOriginsPolicy);
 
 app.Run();

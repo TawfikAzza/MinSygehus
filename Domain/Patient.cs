@@ -12,4 +12,6 @@ public class Patient {
     
     [BsonElement("Name")]
     public string Name { get; set; } = default!;
+
+    public Measurement? Measurement { get; set; } = default!;
 }

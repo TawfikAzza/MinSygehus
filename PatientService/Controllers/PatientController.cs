@@ -9,9 +9,11 @@ namespace PatientService.Controllers;
 public class PatientController : ControllerBase {
 
     private readonly PatientManager _patientManager;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public PatientController(PatientManager patientManager) {
+    public PatientController(PatientManager patientManager, IHttpClientFactory clientFactory) {
         _patientManager = patientManager;
+        _clientFactory = clientFactory;
     }
 
     [HttpPost]
@@ -25,7 +27,7 @@ public class PatientController : ControllerBase {
         return Ok(result);
     }
 
-    //The measurement boolean is there to allow the client to decide if they want to include the measurements in the response
+
     [HttpGet]
     public async Task<ActionResult<Patient>> GetPatient(string ssn, bool measurement = false) {
         var result = await _patientManager.GetBySsn(ssn);
@@ -33,9 +35,21 @@ public class PatientController : ControllerBase {
         if (result is null) {
             return BadRequest("Patient not found");
         }
+        
+        if (measurement) {
+            var instance = _clientFactory.CreateClient();
+            var measurementResult = await instance.GetAsync(Constants.MeasurementAddress + $"/{ssn}");
+
+            if (!measurementResult.IsSuccessStatusCode) {
+                return Ok(result);
+            }
+            result.Measurement = await measurementResult.Content.ReadFromJsonAsync<Measurement>();
+            return Ok(result);
+        }
 
         return Ok(result);
     }
+
 
     [HttpDelete]
     public async Task<IActionResult> DeletePatient(string ssn) {
@@ -47,4 +61,5 @@ public class PatientController : ControllerBase {
 
         return Ok($"Deleted patient with ssn: {ssn}");
     }
+
 }

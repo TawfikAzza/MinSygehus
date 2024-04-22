@@ -19,6 +19,8 @@ builder.Services.AddSingleton<DbContext>(serviceProvider =>
     return new DbContext(settings.ConnectionString, settings.DatabaseName);
 });
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddScoped<PatientManager>();
 builder.Services.AddScoped<PatientRepository>();
 

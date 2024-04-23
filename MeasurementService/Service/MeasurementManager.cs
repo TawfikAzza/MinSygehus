@@ -10,7 +10,7 @@ public class MeasurementManager {
         _measurementRepository = measurementRepository;
     }
     
-    public async Task CreateMeasurement(Measurement measurement) {
-        await _measurementRepository.CreateMeasurement(measurement);
+    public async Task<Measurement?> CreateMeasurement(Measurement measurement) {
+        return await _measurementRepository.Create(measurement);
     }
 }

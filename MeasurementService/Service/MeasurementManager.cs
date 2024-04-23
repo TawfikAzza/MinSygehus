@@ -13,4 +13,7 @@ public class MeasurementManager {
     public async Task<Measurement?> CreateMeasurement(Measurement measurement) {
         return await _measurementRepository.Create(measurement);
     }
+    public async Task<Measurement?> UpdateMeasurement(Measurement measurement) {
+        return await _measurementRepository.Update(measurement);
+    }
 }

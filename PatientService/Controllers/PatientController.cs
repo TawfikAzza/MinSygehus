@@ -43,7 +43,9 @@ public class PatientController : ControllerBase {
             if (!measurementResult.IsSuccessStatusCode) {
                 return Ok(result);
             }
-            result.Measurement = await measurementResult.Content.ReadFromJsonAsync<Measurement>();
+            
+            // TODO: Test
+            result.Measurements = await measurementResult.Content.ReadFromJsonAsync<List<Measurement>>();
             return Ok(result);
         }
 

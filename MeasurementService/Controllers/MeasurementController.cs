@@ -7,18 +7,18 @@ namespace MeasurementService.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class MeasurementServiceController : ControllerBase {
+public class MeasurementController : ControllerBase {
     private readonly MeasurementManager _measurementManager;
     private readonly IHttpClientFactory _clientFactory;
 
-    public MeasurementServiceController(MeasurementManager manager, IHttpClientFactory clientFactory) {
+    public MeasurementController(MeasurementManager manager, IHttpClientFactory clientFactory) {
         _measurementManager = manager;
         _clientFactory = clientFactory;
     }
 
-
     [HttpPost]
-    public async Task<ActionResult<Measurement>> PostMeasurement([FromBody] PostMeasurementDTO dto) {
+    public async Task<ActionResult<Measurement>> Create([FromBody] PostMeasurementDto dto) {
+        // Mapping DTO to domain model
         var measurement = new Measurement {
             Ssn = dto.Ssn,
             Date = DateTime.UtcNow,
@@ -27,8 +27,10 @@ public class MeasurementServiceController : ControllerBase {
             Seen = false
         };
 
+        // Sending create task to the manager
         var result = await _measurementManager.CreateMeasurement(measurement);
 
+        // Check for errors
         if (result is null) {
             return BadRequest("Couldn't create the measurement");
         }
@@ -36,14 +38,15 @@ public class MeasurementServiceController : ControllerBase {
         return Ok(measurement);
     }
 
-    /*
-    [HttpPut("{id}")]
-    public async Task<ActionResult<Measurement>> PutMeasurement(int id, [FromBody] Measurement measurement) {
-        await _repository.UpdateMeasurementAsync(id, measurement);
+    
+    [HttpPut]
+    public async Task<ActionResult<Measurement>> Update([FromBody] Measurement measurement) {
+        var result = await _measurementManager.UpdateMeasurement(measurement);
 
         return Ok(measurement);
     }
 
+    /*
     [HttpGet]
     public async Task<ActionResult<List<Measurement>>> GetMeasurement([FromQuery] int id) {
         var measurements = await _repository.GetMeasurementsByPatientIdAsync(id);

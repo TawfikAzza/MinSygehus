@@ -4,14 +4,14 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Domain;
 
 public class Patient {
-    [BsonId]
+    [BsonId] 
     public string Ssn { get; set; } = default!;
-    
+
     [BsonElement("Mail")]
     public string Mail { get; set; } = default!;
-    
-    [BsonElement("Name")]
+
+    [BsonElement("Name")] 
     public string Name { get; set; } = default!;
 
-    public Measurement? Measurement { get; set; } = default!;
+    public List<Measurement> Measurements { get; set; } = new List<Measurement>();
 }

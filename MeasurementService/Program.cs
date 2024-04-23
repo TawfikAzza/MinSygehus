@@ -28,7 +28,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:9099", //PatientUI PROD
                                 "http://localhost:8080", //DoctorUI PROD
-                                "http://localhost:5173") //DEV
+                                "http://localhost:5007") //DEV
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -39,7 +39,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("_allowOriginsPolicy");
 

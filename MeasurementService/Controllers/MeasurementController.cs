@@ -15,11 +15,24 @@ public class MeasurementController : ControllerBase {
         _measurementManager = manager;
         _clientFactory = clientFactory;
     }
+    
+    [HttpGet]
+    public async Task<ActionResult<Measurement>> GetAllBySsn([FromQuery] string ssn) {
+        var result = await _measurementManager.GetAllBySsn(ssn);
+
+        if (result.Count == 0) {
+            return BadRequest($"Measurements were not found for ssn {ssn}");
+        }
+
+        return Ok(result);
+    }
 
     [HttpPost]
     public async Task<ActionResult<Measurement>> Create([FromBody] PostMeasurementDto dto) {
+        var random = new Random();
         // Mapping DTO to domain model
         var measurement = new Measurement {
+            Id = random.Next(Int32.MaxValue),
             Ssn = dto.Ssn,
             Date = DateTime.UtcNow,
             Systolic = dto.Systolic,
@@ -42,27 +55,11 @@ public class MeasurementController : ControllerBase {
     [HttpPut]
     public async Task<ActionResult<Measurement>> Update([FromBody] Measurement measurement) {
         var result = await _measurementManager.UpdateMeasurement(measurement);
+        
+        if (result is null) {
+            return BadRequest("Couldn't update the measurement");
+        }
 
         return Ok(measurement);
     }
-
-    /*
-    [HttpGet]
-    public async Task<ActionResult<List<Measurement>>> GetMeasurement([FromQuery] int id) {
-        var measurements = await _repository.GetMeasurementsByPatientIdAsync(id);
-
-        return Ok(measurements);
-    }
-
-    [HttpGet("BySsn")]
-    public async Task<ActionResult<List<Measurement>>> GetMeasurementBySsn([FromQuery] string ssn) {
-        var patientMeasurements = await _repository.GetLatestMeasurementBySsnAsync(ssn);
-
-        if (patientMeasurements is null) {
-            return BadRequest("Measurements not found");
-        }
-
-        return Ok(patientMeasurements);
-    }
-    */
 }

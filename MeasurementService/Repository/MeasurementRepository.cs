@@ -11,6 +11,18 @@ public class MeasurementRepository {
     public MeasurementRepository(DbContext dbContext) {
         _context = dbContext;
     }
+    
+    public async Task<List<Measurement>> GetAllBySsn(string ssn) {
+        try {
+            var filter = Builders<Measurement>.Filter
+                .Eq(r => r.Ssn, ssn);
+            return await _context.Measurements.Find(filter).ToListAsync();
+        }
+        catch (Exception e) {
+            Console.WriteLine(e.Message);
+            return new List<Measurement>();
+        }
+    }
 
     public async Task<Measurement?> Create(Measurement measurement) {
         try {
@@ -34,5 +46,4 @@ public class MeasurementRepository {
             return null;
         }
     }
-
 }

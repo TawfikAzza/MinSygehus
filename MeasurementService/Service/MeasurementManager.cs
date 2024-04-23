@@ -16,4 +16,7 @@ public class MeasurementManager {
     public async Task<Measurement?> UpdateMeasurement(Measurement measurement) {
         return await _measurementRepository.Update(measurement);
     }
+    public async Task<List<Measurement>> GetAllBySsn(string ssn) {
+        return await _measurementRepository.GetAllBySsn(ssn);
+    }
 }

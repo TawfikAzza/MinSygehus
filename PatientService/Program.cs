@@ -15,10 +15,8 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection(nam
 
 builder.Services.AddSingleton<DbContext>(serviceProvider =>
 {   
-    var ConnectionString = "mongodb://patient-db:27017";
-    var DatabaseName = "patient-db";
     var settings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-    return new DbContext(ConnectionString, DatabaseName);
+    return new DbContext(settings.ConnectionString, settings.DatabaseName);
 });
 
 builder.Services.AddScoped<PatientManager>();
@@ -44,7 +42,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("_allowOriginsPolicy");
 

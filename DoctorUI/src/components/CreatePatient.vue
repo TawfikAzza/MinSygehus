@@ -6,11 +6,20 @@ const mail = ref('');
 const name = ref('');
 
 const createPatient = async () => {
+  console.log("Creating patient");
+  console.log(ssn.value, mail.value, name.value);
+
   const patient = {
     Ssn: ssn.value,
     Mail: mail.value,
     Name: name.value,
-    Measurement: null // Could be omitted from the PostPatientDtom, also Measurement[S]
+    Measurement: { //TODO: Remove this later
+      "ssn": "string",
+      "id": 0,
+      "date": "2024-04-23T08:47:04.627Z",
+      "systolic": 0,
+      "diastolic": 0
+    }
   };
 
   const request = {

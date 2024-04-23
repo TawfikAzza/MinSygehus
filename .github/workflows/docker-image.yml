@@ -30,12 +30,19 @@ jobs:
 
     # Optionally, run some tests here if you have them
 
-    - name: Push the Docker images
+    - name: Create tags for Docker images
       run: |
-        docker-compose push doctor-ui
-        docker-compose push patient-ui
-        docker-compose push measurement-service
-        docker-compose push patient-service
+        docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-1.0.1
+        docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-1.0.1
+        docker tag measurement-service:latest sergiomm000/minsygehus:measurement-service-1.0.1
+        docker tag patient-service:latest sergiomm000/minsygehus:patient-service-1.0.1
+
+    - name: Push to Docker Hub the new version of the images
+      run: |
+        docker push sergiomm000/minsygehus:doctor-ui-1.0.1
+        docker push patient-ui:latest sergiomm000/minsygehus:patient-ui-1.0.1
+        docker push measurement-service:latest sergiomm000/minsygehus:measurement-service-1.0.1
+        docker push patient-service:latest sergiomm000/minsygehus:patient-service-1.0.1
 
     # Optional step to logout from Docker Hub
     - name: Logout of Docker Hub

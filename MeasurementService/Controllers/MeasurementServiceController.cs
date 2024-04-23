@@ -1,3 +1,5 @@
+using Domain;
+using Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MeasurementService.Service;
 
@@ -13,22 +15,23 @@ namespace MeasurementService.Controllers {
             _clientFactory = clientFactory;
         }
 
-        /*
+        
         [HttpPost]
         public async Task<ActionResult<Measurement>> PostMeasurement([FromBody] PostMeasurementDTO dto) {
             var measurement = new Measurement {
                 Ssn = dto.Ssn,
-                Id = dto.Id,
                 Date = DateTime.UtcNow,
                 Systolic = dto.Systolic,
-                Diastolic = dto.Diastolic
+                Diastolic = dto.Diastolic, 
+                Seen = false
             };
 
-            await _repository.CreateMeasurementAsync(measurement);
+            await _measurementManager.CreateMeasurement(measurement);
 
             return Ok(measurement);
         }
 
+        /*
         [HttpPut("{id}")]
         public async Task<ActionResult<Measurement>> PutMeasurement(int id, [FromBody] Measurement measurement) {
             await _repository.UpdateMeasurementAsync(id, measurement);

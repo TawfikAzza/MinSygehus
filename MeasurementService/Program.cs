@@ -1,7 +1,6 @@
-using MongoDB.Driver;
-using Domain;
 using MeasurementService.Repository;
 using MeasurementService.Context;
+using MeasurementService.Service;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +17,9 @@ builder.Services.AddSingleton<DbContext>(serviceProvider =>
     var settings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
     return new DbContext(settings.ConnectionString, settings.DatabaseName);
 });
+
+builder.Services.AddScoped<MeasurementManager>();
+builder.Services.AddScoped<MeasurementRepository>();
 
 builder.Services.AddCors(options =>
 {

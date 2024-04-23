@@ -1,3 +1,3 @@
-﻿namespace MeasurementService.DTO;
+﻿namespace Domain.DTOs;
 
-public record PostMeasurementDTO(int Id, DateTime Date, string Ssn, int Systolic, int Diastolic);
+public record PostMeasurementDTO(string Ssn, int Systolic, int Diastolic);

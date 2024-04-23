@@ -32,17 +32,17 @@ jobs:
 
     - name: Create tags for Docker images
       run: |
-        docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-1.0.1
-        docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-1.0.1
-        docker tag measurement-service:latest sergiomm000/minsygehus:measurement-service-1.0.1
-        docker tag patient-service:latest sergiomm000/minsygehus:patient-service-1.0.1
+        docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-1.0.2
+        docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-1.0.2
+        docker tag measurement-service:latest sergiomm000/minsygehus:measurement-service-1.0.2
+        docker tag patient-service:latest sergiomm000/minsygehus:patient-service-1.0.2
 
     - name: Push to Docker Hub the new version of the images
       run: |
-        docker push sergiomm000/minsygehus:doctor-ui-1.0.1
-        docker push patient-ui:latest sergiomm000/minsygehus:patient-ui-1.0.1
-        docker push measurement-service:latest sergiomm000/minsygehus:measurement-service-1.0.1
-        docker push patient-service:latest sergiomm000/minsygehus:patient-service-1.0.1
+        docker push sergiomm000/minsygehus:doctor-ui-1.0.2
+        docker push sergiomm000/minsygehus:patient-ui-1.0.2
+        docker push sergiomm000/minsygehus:measurement-service-1.0.2
+        docker push sergiomm000/minsygehus:patient-service-1.0.2
 
     # Optional step to logout from Docker Hub
     - name: Logout of Docker Hub

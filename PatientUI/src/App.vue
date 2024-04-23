@@ -12,7 +12,24 @@ const login = async () => {
     console.error('Missing SSN!');
     return;
   }
-  isLoggedIn.value = true;
+  else {
+    const request = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    let requestUrl = 'http://localhost:8081/Patient/?ssn=' + ssn.value;
+    const response = await fetch(requestUrl, request);
+    const result = await response.json();
+    //Check if request code is 200
+    if (response.status !== 200) {
+      console.error('Invalid SSN!');
+      return;
+    }
+    console.log(result);
+    isLoggedIn.value = true;
+  }
 };
 
 const sendMeasurement = async () => {
@@ -24,8 +41,6 @@ const sendMeasurement = async () => {
   }
 
   const postMeasurementDto = {
-    Id: Math.floor(Math.random() * 0x100000000) | 0, // Should be done on backend
-    Date: new Date().toISOString(), // Done on backend, but left in the DTO (???)
     Ssn: ssn.value,
     Systolic: systolic.value,
     Diastolic: diastolic.value,
@@ -38,7 +53,7 @@ const sendMeasurement = async () => {
     },
     body: JSON.stringify(postMeasurementDto),
   };
-  let requestUrl = 'http://localhost:9091/MeasurementService';
+  let requestUrl = 'http://localhost:9091/Measurement';
 
   //Get the result from the server
   const response = await fetch(requestUrl, request);

@@ -20,7 +20,28 @@ const getMeasurements = async () => {
   const response = await fetch(requestUrl, request);
   const result = await response.json();
   console.log(result);
-  measurements.value = result;
+  measurements.value = result.measurements;
+}
+
+const markAsSeen = async (id) => {
+  console.log("Marking as seen");
+  const measurement = measurements.value.find(m => m.id === id);
+  measurement.seen = true;
+
+  const request = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(measurement),
+  };
+  let requestUrl = 'http://localhost:9091/Measurement';
+
+  //Get the result from the server
+  const response = await fetch(requestUrl, request);
+  const result = await response.json();
+  console.log(result);
+  getMeasurements();
 }
 
 </script>
@@ -34,6 +55,9 @@ const getMeasurements = async () => {
       <p>{{measurement.date}}</p>
       <p>{{measurement.systolic}}</p>
       <p>{{measurement.diastolic}}</p>
+      <p v-if="measurement.seen">Seen</p>
+      <button v-else @click="markAsSeen(measurement.id)">Mark as seen</button>
+      _______________________
     </div>
   </section>
 </template>

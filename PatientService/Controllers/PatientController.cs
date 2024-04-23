@@ -38,7 +38,7 @@ public class PatientController : ControllerBase {
         
         if (measurement) {
             using var instance = _clientFactory.CreateClient();
-            var measurementResult = await instance.GetAsync(Constants.MeasurementAddress + $"/{ssn}");
+            var measurementResult = await instance.GetAsync(Constants.MeasurementAddress + $"?ssn={ssn}");
 
             if (!measurementResult.IsSuccessStatusCode) {
                 return Ok(result);

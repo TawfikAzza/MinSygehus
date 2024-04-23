@@ -5,8 +5,6 @@ using PatientService.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var allowOriginsPolicy = "_allowOriginsPolicy";
-
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -23,18 +21,6 @@ builder.Services.AddSingleton<DbContext>(serviceProvider =>
 
 builder.Services.AddScoped<PatientManager>();
 builder.Services.AddScoped<PatientRepository>();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: allowOriginsPolicy,
-        policy  =>
-        {
-            policy.WithOrigins("http://localhost:9099", //PatientUI PROD
-                    "http://localhost:8088", //DoctorUI PROD
-                    "http://localhost:5173") //DEV
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
-});
 
 // Configure CORS policy
 builder.Services.AddCors(options =>
@@ -62,7 +48,5 @@ app.UseCors("_allowOriginsPolicy");
 //app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors(allowOriginsPolicy);
 
 app.Run();

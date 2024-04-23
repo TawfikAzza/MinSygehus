@@ -1,5 +1,5 @@
 ﻿namespace Domain;
 
 public class Constants {
-    public static string MeasurementAddress => "localhost:9091/measurement";
+    public static string MeasurementAddress => "http://measurement-service/Measurement";
 }

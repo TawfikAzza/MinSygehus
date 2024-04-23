@@ -11,12 +11,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<DatabaseContext>();
 
 var connectionString = "mongodb://measurement-db:27017";
 var databaseName = "measurement-db";
-var allowOriginsPolicy = "_allowOriginsPolicy";
 
 var client = new MongoClient(connectionString);
 var database = client.GetDatabase(databaseName);
@@ -37,7 +37,7 @@ builder.Services.AddScoped<MeasurementRepository>(provider =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: allowOriginsPolicy,
+    options.AddPolicy("_allowOriginsPolicy",
         policy  =>
         {
             policy.WithOrigins("http://localhost:9099", //PatientUI PROD
@@ -62,6 +62,6 @@ var app = builder.Build();
 
 app.MapControllers();
 
-app.UseCors(allowOriginsPolicy);
+app.UseCors("_allowOriginsPolicy");
 
 app.Run();

@@ -29,7 +29,6 @@ public class PatientRepository {
         var result = await _context.Patients.FindAsync(filter);
         return await result.FirstOrDefaultAsync();
     }
-
     
     public async Task<bool> DeleteBySsn(string ssn) {
         try {

@@ -33,5 +33,14 @@ namespace MeasurementService.Repository
             var filter = Builders<Measurement>.Filter.Eq(m => m.Id, id);
             return await _measurements.Find(filter).ToListAsync();
         }
+
+        // Get latest measurement by patient Ssn
+        public async Task<Measurement> GetLatestMeasurementBySsnAsync(string ssn)
+        {
+            var filter = Builders<Measurement>.Filter.Eq(m => m.Ssn, ssn);
+            var sort = Builders<Measurement>.Sort.Descending(m => m.Date);
+            return await _measurements.Find(filter).Sort(sort).FirstOrDefaultAsync();
+        }
+        
     }
 }

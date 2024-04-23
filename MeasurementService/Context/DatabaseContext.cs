@@ -1,16 +1,15 @@
-using Microsoft.EntityFrameworkCore;
 using Domain;
 using MongoDB.Driver;
 
-namespace MeasurementService.Context
-{
-    public class DatabaseContext : DbContext
-    {
-        public IMongoCollection<Measurement> Measurements { get; private set; }
+namespace MeasurementService.Context;
 
-        public DatabaseContext(IMongoCollection<Measurement> measurements)
-        {
-            Measurements = measurements;
-        }
+public class DbContext {
+    private readonly IMongoDatabase _database;
+
+    public DbContext(string connectionString, string databaseName) {
+        var client = new MongoClient(connectionString);
+        _database = client.GetDatabase(databaseName);
     }
+
+    public IMongoCollection<Measurement> Measurements => _database.GetCollection<Measurement>("Measurements");
 }

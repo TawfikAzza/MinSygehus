@@ -1,6 +1,5 @@
 ﻿namespace MeasurementService.Service;
 
-public class MeasurementService
-{
-    
+public class MeasurementManager {
+
 }

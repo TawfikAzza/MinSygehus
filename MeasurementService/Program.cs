@@ -2,37 +2,21 @@ using MongoDB.Driver;
 using Domain;
 using MeasurementService.Repository;
 using MeasurementService.Context;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
-builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection(nameof(MongoDbSettings)));
 
-var connectionString = "mongodb://measurement-db:27017";
-var databaseName = "measurement-db";
-
-var client = new MongoClient(connectionString);
-var database = client.GetDatabase(databaseName);
-var measurementsCollection = database.GetCollection<Measurement>("measurements");
-
-builder.Services.AddSingleton(measurementsCollection);
-builder.Services.AddSingleton<IMongoClient>(client);
-
-// Register MeasurementRepository
-builder.Services.AddScoped<MeasurementRepository>(provider => 
-{
-    var connectionString = "mongodb://measurement-db:27017";
-    var databaseName = "measurement-db";
-    var client = new MongoClient(connectionString);
-    var database = client.GetDatabase(databaseName);
-    return new MeasurementRepository(client, database);
+builder.Services.AddSingleton<DbContext>(serviceProvider =>
+{   
+    var settings = serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+    return new DbContext(settings.ConnectionString, settings.DatabaseName);
 });
 
 builder.Services.AddCors(options =>
@@ -50,18 +34,15 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI();
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("_allowOriginsPolicy");
 
-
-//app.UseHttpsRedirection();
-
-//app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors("_allowOriginsPolicy");
 
 app.Run();

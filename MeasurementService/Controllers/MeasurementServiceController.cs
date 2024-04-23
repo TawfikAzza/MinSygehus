@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using MeasurementService.Repository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace MeasurementService.Controllers
 {
@@ -12,10 +14,12 @@ namespace MeasurementService.Controllers
     public class MeasurementServiceController : ControllerBase
     {
         private readonly MeasurementRepository _repository;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public MeasurementServiceController(MeasurementRepository repository)
+        public MeasurementServiceController(MeasurementRepository repository, IHttpClientFactory clientFactory)
         {
             _repository = repository;
+            _clientFactory = clientFactory;
         }
 
         [HttpPost]
@@ -50,5 +54,18 @@ namespace MeasurementService.Controllers
 
             return Ok(measurements);
         }
+
+        [HttpGet("BySsn")]
+public async Task<ActionResult<List<Measurement>>> GetMeasurementBySsn([FromQuery] string ssn)
+{
+    var patientMeasurements = await _repository.GetLatestMeasurementBySsnAsync(ssn);
+
+    if (patientMeasurements is null)
+    {
+        return BadRequest("Measurements not found");
+    }
+
+    return Ok(patientMeasurements);
+}
     }
 }

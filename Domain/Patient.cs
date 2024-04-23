@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Domain;
 
 public class Patient {
-    [BsonElement("Ssn")]
+    [BsonId]
     public string Ssn { get; set; } = default!;
     
     [BsonElement("Mail")]

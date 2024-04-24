@@ -1,0 +1,50 @@
+name: Build + push to Docker Hub
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    environment: minsygehus_prod
+    
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v3
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+    - name: Build the Docker images
+      run: docker-compose build
+
+    # Optionally, run some tests here if you have them
+
+    - name: Create tags for Docker images
+      run: |
+        docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-1.0.2
+        docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-1.0.2
+        docker tag measurement-service:latest sergiomm000/minsygehus:measurement-service-1.0.2
+        docker tag patient-service:latest sergiomm000/minsygehus:patient-service-1.0.2
+
+    - name: Push to Docker Hub the new version of the images
+      run: |
+        docker push sergiomm000/minsygehus:doctor-ui-1.0.2
+        docker push sergiomm000/minsygehus:patient-ui-1.0.2
+        docker push sergiomm000/minsygehus:measurement-service-1.0.2
+        docker push sergiomm000/minsygehus:patient-service-1.0.2
+
+    # Optional step to logout from Docker Hub
+    - name: Logout of Docker Hub
+      run: docker logout
+

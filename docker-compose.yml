@@ -33,6 +33,8 @@ services:
       - "9091:80"
     depends_on:
       - measurement-db
+      - seq
+      - zipkin
     networks:
       - extranet
       - intranet
@@ -46,6 +48,8 @@ services:
     depends_on:
       - patient-db
       - measurement-service
+      - seq
+      - zipkin
     networks:
       - extranet
       - intranet
@@ -67,6 +71,21 @@ services:
       - patient_data:/data/db
     networks:
       - intranet
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - intranet
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:5341" # Receive log events over HTTP
+      - "5342:80" # Seq web UI (local:redirected)
+    networks:
+      - intranet
+    environment:
+      ACCEPT_EULA: Y
 
 volumes:
   measurement_data:

@@ -2,6 +2,7 @@ using Domain;
 using Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MeasurementService.Service;
+using OpenTelemetry.Trace;
 
 namespace MeasurementService.Controllers;
 
@@ -10,14 +11,17 @@ namespace MeasurementService.Controllers;
 public class MeasurementController : ControllerBase {
     private readonly MeasurementManager _measurementManager;
     private readonly IHttpClientFactory _clientFactory;
+    private readonly Tracer _tracer;
 
-    public MeasurementController(MeasurementManager manager, IHttpClientFactory clientFactory) {
+    public MeasurementController(MeasurementManager manager, IHttpClientFactory clientFactory, Tracer tracer) {
         _measurementManager = manager;
         _clientFactory = clientFactory;
+        _tracer = tracer;
     }
     
     [HttpGet]
     public async Task<ActionResult<Measurement>> GetAllBySsn([FromQuery] string ssn) {
+        using var activity = _tracer.StartActiveSpan("GetMeasurement");
         var result = await _measurementManager.GetAllBySsn(ssn);
 
         if (result.Count == 0) {

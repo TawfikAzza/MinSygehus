@@ -8,9 +8,10 @@ using PatientService.Service;
 var builder = WebApplication.CreateBuilder(args);
 /* Tracer config **/
 var serviceName = "PatientService";
+var serviceVersion = "1.0.0";
 
 
-builder.Services.AddOpenTelemetry().Setup();
+builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
 builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
 
 /* End tracer config */

@@ -1,10 +1,19 @@
 using Microsoft.Extensions.Options;
+using Monitoring;
+using OpenTelemetry.Trace;
 using PatientService.PatientContext;
 using PatientService.Repository;
 using PatientService.Service;
 
 var builder = WebApplication.CreateBuilder(args);
+/* Tracer config **/
+var serviceName = "PatientService";
 
+
+builder.Services.AddOpenTelemetry().Setup();
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
+
+/* End tracer config */
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -1,5 +1,6 @@
 using Domain;
 using Microsoft.AspNetCore.Mvc;
+using OpenTelemetry.Trace;
 using PatientService.Service;
 
 namespace PatientService.Controllers;
@@ -10,17 +11,20 @@ public class PatientController : ControllerBase {
 
     private readonly PatientManager _patientManager;
     private readonly IHttpClientFactory _clientFactory;
-
-    public PatientController(PatientManager patientManager, IHttpClientFactory clientFactory) {
+    private readonly Tracer _tracer;
+    public PatientController(PatientManager patientManager, IHttpClientFactory clientFactory, Tracer tracer) {
         _patientManager = patientManager;
         _clientFactory = clientFactory;
+        _tracer = tracer;
     }
 
     [HttpPost]
     public async Task<ActionResult<Patient>> CreatePatient(Patient patient) {
+        using var activity = _tracer.StartActiveSpan("CreatePatient");
         var result = await _patientManager.Create(patient);
-
+        
         if (result is null) {
+            Monitoring.Monitoring.Log.Error("Couldn't create the patient");
             return BadRequest("Couldn't create the patient");
         }
 
@@ -30,13 +34,16 @@ public class PatientController : ControllerBase {
 
     [HttpGet]
     public async Task<ActionResult<Patient>> GetPatient(string ssn, bool measurement = false) {
+        using var activity = _tracer.StartActiveSpan("GetPatient");
         var result = await _patientManager.GetBySsn(ssn);
-
+        
         if (result is null) {
+            Monitoring.Monitoring.Log.Error("Patient not found");
             return BadRequest("Patient not found");
         }
         
         if (measurement) {
+            
             using var instance = _clientFactory.CreateClient();
             var measurementResult = await instance.GetAsync(Constants.MeasurementAddress + $"?ssn={ssn}");
 
@@ -58,6 +65,7 @@ public class PatientController : ControllerBase {
         var result = await _patientManager.DeleteBySsn(ssn);
 
         if (!result) {
+            Monitoring.Monitoring.Log.Error("Couldn't delete a patient");
             return BadRequest($"Couldn't delete the patient with ssn: {ssn}");
         }
 

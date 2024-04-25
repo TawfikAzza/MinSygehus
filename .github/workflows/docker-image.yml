@@ -39,19 +39,7 @@ jobs:
     - name: Build the Docker images
       run: docker-compose build
 
-    - name: Check if the Docker images need to be pushed
-      id: check-version-change
-      run: |
-        TAG=$(curl -s https://hub.docker.com/v2/repositories/sergiomm000/minsygehus/tags/${{ steps.fetch-version.outputs.version }} | jq -r '.name')
-        if [[ "$TAG" == "${{ steps.fetch-version.outputs.version }}" ]]; then
-          echo "::set-output name=should-push::false"
-          echo "Version has not changed, no need to push new Docker images."
-        else
-          echo "::set-output name=should-push::true"
-        fi
-
     - name: Tag and push Docker images
-      if: steps.check-version-change.outputs.should-push == 'true'
       run: |
         docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-${{ steps.fetch-version.outputs.version }}
         docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-${{ steps.fetch-version.outputs.version }}

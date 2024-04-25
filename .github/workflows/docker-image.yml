@@ -1,4 +1,4 @@
-name: Build + push to Docker Hub
+name: Build + Push to Docker Hub
 
 on:
   push:
@@ -15,31 +15,17 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v3
 
-    - name: Setup Python (to run the version script)
+    - name: Setup Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    - name: Fetch the latest tag
-      id: get-latest-tag
+    - name: Fetch the version from version.txt
+      id: fetch-version
       run: |
-        TAG=$(curl -s https://api.github.com/repos/${{ github.repository }}/tags \
-          -H "Authorization: token ${{ secrets.GH_PAT }}" | jq -r '.[0].name' | head -n 1)
-        if [[ "$TAG" == "null" ]]; then
-          echo "::set-output name=tag::1.0.0" # default to 1.0.0 if no tags found
-        else
-          echo "::set-output name=tag::$TAG"
-        fi
-
-    - name: Increment version
-      id: increment-version
-      run: |
-        CURRENT_VERSION=${{ steps.get-latest-tag.outputs.tag }}
-        IFS='.' read -ra ADDR <<< "$CURRENT_VERSION"
-        PATCH=${ADDR[2]}
-        NEW_PATCH=$(($PATCH + 1))
-        NEW_VERSION="${ADDR[0]}.${ADDR[1]}.$NEW_PATCH"
-        echo "::set-output name=new-version::$NEW_VERSION"
+        VERSION=$(cat .github/version.txt)
+        echo "Current version: $VERSION"
+        echo "::set-output name=version::$VERSION"
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
@@ -53,27 +39,28 @@ jobs:
     - name: Build the Docker images
       run: docker-compose build
 
+    - name: Check if the Docker images need to be pushed
+      id: check-version-change
+      run: |
+        TAG=$(curl -s https://hub.docker.com/v2/repositories/sergiomm000/minsygehus/tags/${{ steps.fetch-version.outputs.version }} | jq -r '.name')
+        if [[ "$TAG" == "${{ steps.fetch-version.outputs.version }}" ]]; then
+          echo "::set-output name=should-push::false"
+          echo "Version has not changed, no need to push new Docker images."
+        else
+          echo "::set-output name=should-push::true"
+        fi
+
     - name: Tag and push Docker images
+      if: steps.check-version-change.outputs.should-push == 'true'
       run: |
-        docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-${{ steps.increment-version.outputs.new-version }}
-        docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-${{ steps.increment-version.outputs.new-version }}
-        docker tag measurement-service:latest sergiomm000/minsygehus:measurement-service-${{ steps.increment-version.outputs.new-version }}
-        docker tag patient-service:latest sergiomm000/minsygehus:patient-service-${{ steps.increment-version.outputs.new-version }}
-        docker push sergiomm000/minsygehus:doctor-ui-${{ steps.increment-version.outputs.new-version }}
-        docker push sergiomm000/minsygehus:patient-ui-${{ steps.increment-version.outputs.new-version }}
-        docker push sergiomm000/minsygehus:measurement-service-${{ steps.increment-version.outputs.new-version }}
-        docker push sergiomm000/minsygehus:patient-service-${{ steps.increment-version.outputs.new-version }}
-
-    - name: Configure git with GH_PAT
-      run: |
-        git config --global user.name "GitHub Action"
-        git config --global user.email "action@github.com"
-        git remote set-url origin https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
-
-    - name: Create new tag and push
-      run: |
-        git tag ${{ steps.increment-version.outputs.new-version }}
-        git push origin ${{ steps.increment-version.outputs.new-version }}
+        docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-${{ steps.fetch-version.outputs.version }}
+        docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-${{ steps.fetch-version.outputs.version }}
+        docker tag measurement-service:latest sergiomm000/minsygehus:measurement-service-${{ steps.fetch-version.outputs.version }}
+        docker tag patient-service:latest sergiomm000/minsygehus:patient-service-${{ steps.fetch-version.outputs.version }}
+        docker push sergiomm000/minsygehus:doctor-ui-${{ steps.fetch-version.outputs.version }}
+        docker push sergiomm000/minsygehus:patient-ui-${{ steps.fetch-version.outputs.version }}
+        docker push sergiomm000/minsygehus:measurement-service-${{ steps.fetch-version.outputs.version }}
+        docker push sergiomm000/minsygehus:patient-service-${{ steps.fetch-version.outputs.version }}
 
     - name: Logout of Docker Hub
       run: docker logout

@@ -39,12 +39,15 @@ jobs:
     - name: Build the Docker images
       run: docker-compose build
 
-    - name: Tag and push Docker images
+    - name: Create tags for Docker images
       run: |
         docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-${{ steps.fetch-version.outputs.version }}
         docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-${{ steps.fetch-version.outputs.version }}
         docker tag measurement-service:latest sergiomm000/minsygehus:measurement-service-${{ steps.fetch-version.outputs.version }}
         docker tag patient-service:latest sergiomm000/minsygehus:patient-service-${{ steps.fetch-version.outputs.version }}
+
+    - name: Push to Docker Hub the new version of the images
+      run: |
         docker push sergiomm000/minsygehus:doctor-ui-${{ steps.fetch-version.outputs.version }}
         docker push sergiomm000/minsygehus:patient-ui-${{ steps.fetch-version.outputs.version }}
         docker push sergiomm000/minsygehus:measurement-service-${{ steps.fetch-version.outputs.version }}

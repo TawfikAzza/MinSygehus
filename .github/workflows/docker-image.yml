@@ -23,7 +23,7 @@ jobs:
     - name: Fetch the version from version.txt
       id: fetch-version
       run: |
-        VERSION=$(cat version.txt)
+        VERSION=$(cat version.txt | tr -d '\ufeff' | tr -d '\n' | tr -d '\r')
         echo "Current version: $VERSION"
         echo "::set-output name=version::$VERSION"
 

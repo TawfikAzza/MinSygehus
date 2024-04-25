@@ -1,3 +1,4 @@
+using FeatureHubSDK;
 using Microsoft.Extensions.Options;
 using Monitoring;
 using OpenTelemetry.Trace;
@@ -15,6 +16,10 @@ builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
 builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
 
 /* End tracer config */
+var config = new EdgeFeatureHubConfig("http://featurehub:8085", "0a532899-9591-4e85-af23-45d0f3395876/LYe8pi2CMBQoQRgjDzT8OCTFuOHRXDC1Sn2HQCTR");
+var fh = await config.NewContext().Build();
+var feature =  fh["DoctorPost"].IsEnabled;
+builder.Services.AddSingleton<IClientContext>(fh);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

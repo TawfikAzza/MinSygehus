@@ -25,6 +25,7 @@ public class MeasurementController : ControllerBase {
         var result = await _measurementManager.GetAllBySsn(ssn);
 
         if (result.Count == 0) {
+            Monitoring.Monitoring.Log.Error("Measurements were not found");
             return BadRequest($"Measurements were not found for ssn {ssn}");
         }
 
@@ -49,6 +50,7 @@ public class MeasurementController : ControllerBase {
 
         // Check for errors
         if (result is null) {
+            Monitoring.Monitoring.Log.Error("Couldn't create the measurement");
             return BadRequest("Couldn't create the measurement");
         }
 
@@ -61,6 +63,7 @@ public class MeasurementController : ControllerBase {
         var result = await _measurementManager.UpdateMeasurement(measurement);
         
         if (result is null) {
+            Monitoring.Monitoring.Log.Error("Couldn't update the measurement");
             return BadRequest("Couldn't update the measurement");
         }
 

@@ -1,4 +1,5 @@
 using Domain;
+using FeatureHubSDK;
 using Microsoft.AspNetCore.Mvc;
 using OpenTelemetry.Trace;
 using PatientService.Service;
@@ -12,14 +13,20 @@ public class PatientController : ControllerBase {
     private readonly PatientManager _patientManager;
     private readonly IHttpClientFactory _clientFactory;
     private readonly Tracer _tracer;
-    public PatientController(PatientManager patientManager, IHttpClientFactory clientFactory, Tracer tracer) {
+    private readonly IClientContext _clientContext;
+    public PatientController(PatientManager patientManager, IHttpClientFactory clientFactory, Tracer tracer, IClientContext clientContext) {
         _patientManager = patientManager;
         _clientFactory = clientFactory;
         _tracer = tracer;
+        _clientContext = clientContext;
     }
-
+   
+    
     [HttpPost]
-    public async Task<ActionResult<Patient>> CreatePatient(Patient patient) {
+    public async Task<ActionResult<Patient>> CreatePatient(Patient patient)
+    {
+        
+        Console.WriteLine("DoctorPost is disabled "+_clientContext["DoctorPost"]);
         using var activity = _tracer.StartActiveSpan("CreatePatient");
         var result = await _patientManager.Create(patient);
         

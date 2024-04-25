@@ -1,5 +1,12 @@
 ﻿version: "3"
 services:
+  featurehub:
+    image: featurehub/party-server:latest
+    restart: always
+    volumes:
+      - featurehub-h2-data:/db
+    ports:
+      - "8085:8085"
   doctor-ui:
     image: doctor-ui
     build:
@@ -50,6 +57,7 @@ services:
       - measurement-service
       - seq
       - zipkin
+      - featurehub
     networks:
       - extranet
       - intranet
@@ -90,6 +98,8 @@ services:
 volumes:
   measurement_data:
   patient_data:
+  featurehub-h2-data:
+  
     
 networks:
   intranet:

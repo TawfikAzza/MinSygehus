@@ -23,7 +23,7 @@ jobs:
     - name: Fetch the version from version.txt
       id: fetch-version
       run: |
-        VERSION=$(cat .github/version.txt)
+        VERSION=$(cat version.txt)
         echo "Current version: $VERSION"
         echo "::set-output name=version::$VERSION"
 

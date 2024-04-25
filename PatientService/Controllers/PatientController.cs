@@ -14,11 +14,14 @@ public class PatientController : ControllerBase {
     private readonly IHttpClientFactory _clientFactory;
     private readonly Tracer _tracer;
     private readonly IClientContext _clientContext;
+    private readonly bool _doctorPost;
+    
     public PatientController(PatientManager patientManager, IHttpClientFactory clientFactory, Tracer tracer, IClientContext clientContext) {
         _patientManager = patientManager;
         _clientFactory = clientFactory;
         _tracer = tracer;
         _clientContext = clientContext;
+        _doctorPost = _clientContext["doctorpost"].IsEnabled;
     }
    
     
@@ -26,7 +29,7 @@ public class PatientController : ControllerBase {
     public async Task<ActionResult<Patient>> CreatePatient(Patient patient)
     {
         
-        Console.WriteLine("DoctorPost is disabled "+_clientContext["DoctorPost"]);
+        Console.WriteLine("Doctor post: " + _doctorPost);
         using var activity = _tracer.StartActiveSpan("CreatePatient");
         var result = await _patientManager.Create(patient);
         

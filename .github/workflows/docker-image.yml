@@ -1,4 +1,4 @@
-name: Build + push to Docker Hub
+name: Build + Push to Docker Hub
 
 on:
   push:
@@ -7,15 +7,26 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build-and-push:
     runs-on: ubuntu-latest
     environment: minsygehus_prod
-    
+
     steps:
     - name: Check out the repo
       uses: actions/checkout@v3
-      
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Fetch the version from version.txt
+      id: fetch-version
+      run: |
+        VERSION=$(cat version.txt | tr -d '\ufeff' | tr -d '\n' | tr -d '\r')
+        echo "Current version: $VERSION"
+        echo "::set-output name=version::$VERSION"
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
@@ -24,27 +35,23 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    
+
     - name: Build the Docker images
       run: docker-compose build
 
-    # Optionally, run some tests here if you have them
-
     - name: Create tags for Docker images
       run: |
-        docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-1.0.2
-        docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-1.0.2
-        docker tag measurement-service:latest sergiomm000/minsygehus:measurement-service-1.0.2
-        docker tag patient-service:latest sergiomm000/minsygehus:patient-service-1.0.2
+        docker tag doctor-ui:latest sergiomm000/minsygehus:doctor-ui-${{ steps.fetch-version.outputs.version }}
+        docker tag patient-ui:latest sergiomm000/minsygehus:patient-ui-${{ steps.fetch-version.outputs.version }}
+        docker tag measurement-service:latest sergiomm000/minsygehus:measurement-service-${{ steps.fetch-version.outputs.version }}
+        docker tag patient-service:latest sergiomm000/minsygehus:patient-service-${{ steps.fetch-version.outputs.version }}
 
     - name: Push to Docker Hub the new version of the images
       run: |
-        docker push sergiomm000/minsygehus:doctor-ui-1.0.2
-        docker push sergiomm000/minsygehus:patient-ui-1.0.2
-        docker push sergiomm000/minsygehus:measurement-service-1.0.2
-        docker push sergiomm000/minsygehus:patient-service-1.0.2
+        docker push sergiomm000/minsygehus:doctor-ui-${{ steps.fetch-version.outputs.version }}
+        docker push sergiomm000/minsygehus:patient-ui-${{ steps.fetch-version.outputs.version }}
+        docker push sergiomm000/minsygehus:measurement-service-${{ steps.fetch-version.outputs.version }}
+        docker push sergiomm000/minsygehus:patient-service-${{ steps.fetch-version.outputs.version }}
 
-    # Optional step to logout from Docker Hub
     - name: Logout of Docker Hub
       run: docker logout
-

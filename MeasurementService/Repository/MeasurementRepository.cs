@@ -1,18 +1,22 @@
 ﻿using Domain;
 using MeasurementService.Context;
 using MongoDB.Driver;
+using OpenTelemetry.Trace;
 
 namespace MeasurementService.Repository;
 
 public class MeasurementRepository {
 
     private readonly DbContext _context;
+    private readonly Tracer _tracer;
 
-    public MeasurementRepository(DbContext dbContext) {
+    public MeasurementRepository(DbContext dbContext, Tracer tracer) {
         _context = dbContext;
+        _tracer = tracer;
     }
     
     public async Task<List<Measurement>> GetAllBySsn(string ssn) {
+        using var activity = _tracer.StartActiveSpan("GetMeasurement - Repository");
         try {
             var filter = Builders<Measurement>.Filter
                 .Eq(r => r.Ssn, ssn);

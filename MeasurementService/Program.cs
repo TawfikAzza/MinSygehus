@@ -2,8 +2,19 @@ using MeasurementService.Repository;
 using MeasurementService.Context;
 using MeasurementService.Service;
 using Microsoft.Extensions.Options;
+using Monitoring;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+
+/* Tracer config **/
+var serviceName = "PatientService";
+var serviceVersion = "1.0.0";
+
+
+builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion);
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
+/* End tracer config */
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

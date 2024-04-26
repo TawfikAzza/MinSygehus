@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientService", "PatientSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{76F02B11-68BB-4E57-A7F8-BF023AE285CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitoring", "Monitoring\Monitoring.csproj", "{2F8E5A9A-1974-420D-903D-FF25C1B0D6D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{76F02B11-68BB-4E57-A7F8-BF023AE285CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76F02B11-68BB-4E57-A7F8-BF023AE285CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76F02B11-68BB-4E57-A7F8-BF023AE285CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F8E5A9A-1974-420D-903D-FF25C1B0D6D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F8E5A9A-1974-420D-903D-FF25C1B0D6D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F8E5A9A-1974-420D-903D-FF25C1B0D6D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F8E5A9A-1974-420D-903D-FF25C1B0D6D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

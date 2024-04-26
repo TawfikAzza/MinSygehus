@@ -1,5 +1,15 @@
 ﻿version: "3"
 services:
+  featurehub:
+    image: featurehub/party-server:latest
+    restart: always
+    volumes:
+      - featurehub-h2-data2:/db
+    ports:
+      - "8085:8085"
+    networks:
+      - extranet
+      - intranet
   doctor-ui:
     image: doctor-ui
     build:
@@ -33,6 +43,8 @@ services:
       - "9091:80"
     depends_on:
       - measurement-db
+      - seq
+      - zipkin
     networks:
       - extranet
       - intranet
@@ -46,6 +58,9 @@ services:
     depends_on:
       - patient-db
       - measurement-service
+      - seq
+      - zipkin
+      - featurehub
     networks:
       - extranet
       - intranet
@@ -67,10 +82,28 @@ services:
       - patient_data:/data/db
     networks:
       - intranet
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - intranet
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:5341" # Receive log events over HTTP
+      - "5342:80" # Seq web UI (local:redirected)
+    networks:
+      - intranet
+    environment:
+      ACCEPT_EULA: Y
 
 volumes:
   measurement_data:
   patient_data:
+  featurehub-h2-data:
+  featurehub-h2-data2:
+  
     
 networks:
   intranet:

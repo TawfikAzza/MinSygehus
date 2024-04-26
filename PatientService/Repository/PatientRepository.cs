@@ -1,5 +1,6 @@
 ﻿using Domain;
 using MongoDB.Driver;
+using OpenTelemetry.Trace;
 using PatientService.PatientContext;
 
 namespace PatientService.Repository;
@@ -7,12 +8,14 @@ namespace PatientService.Repository;
 public class PatientRepository {
     
     private readonly DbContext _context;
-
-    public PatientRepository(DbContext dbContext) {
+    private readonly Tracer _tracer;
+    public PatientRepository(DbContext dbContext, Tracer tracer) {
         _context = dbContext;
+        _tracer = tracer;
     }
 
     public async Task<Patient?> Create(Patient patient) {
+        using var activity = _tracer.StartActiveSpan("CreatePatient-Repository");
         try {
             await _context.Patients.InsertOneAsync(patient);
             return patient;
@@ -24,6 +27,7 @@ public class PatientRepository {
     }
     
     public async Task<Patient?> GetBySsn(string ssn) {
+        using var activity = _tracer.StartActiveSpan("GetPatient-Repository");
         var filter = Builders<Patient>.Filter
             .Eq(r => r.Ssn, ssn);
         var result = await _context.Patients.FindAsync(filter);
@@ -31,6 +35,7 @@ public class PatientRepository {
     }
     
     public async Task<bool> DeleteBySsn(string ssn) {
+        using var activity = _tracer.StartActiveSpan("DeletePatient-Repository");
         try {
             var filter = Builders<Patient>.Filter
                 .Eq(r => r.Ssn, ssn);

@@ -2,6 +2,7 @@ using Domain;
 using Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MeasurementService.Service;
+using OpenTelemetry.Trace;
 
 namespace MeasurementService.Controllers;
 
@@ -10,17 +11,21 @@ namespace MeasurementService.Controllers;
 public class MeasurementController : ControllerBase {
     private readonly MeasurementManager _measurementManager;
     private readonly IHttpClientFactory _clientFactory;
+    private readonly Tracer _tracer;
 
-    public MeasurementController(MeasurementManager manager, IHttpClientFactory clientFactory) {
+    public MeasurementController(MeasurementManager manager, IHttpClientFactory clientFactory, Tracer tracer) {
         _measurementManager = manager;
         _clientFactory = clientFactory;
+        _tracer = tracer;
     }
     
     [HttpGet]
     public async Task<ActionResult<Measurement>> GetAllBySsn([FromQuery] string ssn) {
+        using var activity = _tracer.StartActiveSpan("GetMeasurement");
         var result = await _measurementManager.GetAllBySsn(ssn);
 
         if (result.Count == 0) {
+            Monitoring.Monitoring.Log.Error("Measurements were not found");
             return BadRequest($"Measurements were not found for ssn {ssn}");
         }
 
@@ -45,6 +50,7 @@ public class MeasurementController : ControllerBase {
 
         // Check for errors
         if (result is null) {
+            Monitoring.Monitoring.Log.Error("Couldn't create the measurement");
             return BadRequest("Couldn't create the measurement");
         }
 
@@ -57,6 +63,7 @@ public class MeasurementController : ControllerBase {
         var result = await _measurementManager.UpdateMeasurement(measurement);
         
         if (result is null) {
+            Monitoring.Monitoring.Log.Error("Couldn't update the measurement");
             return BadRequest("Couldn't update the measurement");
         }
 

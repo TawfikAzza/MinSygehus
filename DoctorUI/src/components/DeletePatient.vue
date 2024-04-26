@@ -3,6 +3,8 @@ import {ref} from "vue";
 
 const ssn = ref('');
 
+const isDeletePatientDisabled = ref(false);
+
 const deletePatient = async () => {
   console.log("Deleting patient");
   console.log(ssn.value);
@@ -17,6 +19,15 @@ const deletePatient = async () => {
 
   //Get the result from the server
   const response = await fetch(requestUrl, request);
+  if (response.status !== 200) {
+    if (response.status === 418) {
+      isDeletePatientDisabled.value = true;
+      return;
+    }
+    isDeletePatientDisabled.value = false;
+
+    console.error(response);
+  }
   const result = await response.json();
   console.log(result);
 }
@@ -24,6 +35,7 @@ const deletePatient = async () => {
 
 <template>
   <section>
+    <label class="error" v-if="isDeletePatientDisabled">Creation of patients is temporarily disabled!</label>
     <label for="ssn">SSN:</label>
     <input v-model="ssn" type="text" id="ssn" name="ssn" required>
     <button @click="deletePatient">Delete</button>
@@ -35,5 +47,9 @@ section {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.error {
+  color: red;
 }
 </style>

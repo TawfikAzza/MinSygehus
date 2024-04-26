@@ -26,8 +26,19 @@ public class PatientController : ControllerBase {
     [HttpPost]
     public async Task<ActionResult<Patient>> CreatePatient(Patient patient)
     {
-        var doctorPostEnabled = _clientContext["doctorpost"].IsEnabled;
-        Console.WriteLine(doctorPostEnabled ? "DoctorPost is enabled" : "DoctorPost is disabled");
+
+        Console.WriteLine("");
+        Console.WriteLine("");
+        Console.WriteLine("");
+        Console.WriteLine("");
+        Console.WriteLine("");
+        Console.WriteLine("");
+        Console.WriteLine("Doctor post: " + _clientContext["doctorPost"].IsEnabled);
+        Console.WriteLine("");
+        Console.WriteLine("");
+        Console.WriteLine("");
+        Console.WriteLine("");
+        Console.WriteLine("");
 
         using var activity = _tracer.StartActiveSpan("CreatePatient");
         var result = await _patientManager.Create(patient);

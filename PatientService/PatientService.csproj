@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FeatureHub.SDK" Version="2.3.0" />
+        <PackageReference Include="FeatureHub.SDK" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.12" />
         <PackageReference Include="MongoDB.EntityFrameworkCore" Version="7.0.0-preview.1" />
         <PackageReference Include="MongoDB.Driver" Version="2.25.0" />

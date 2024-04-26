@@ -4,9 +4,12 @@ services:
     image: featurehub/party-server:latest
     restart: always
     volumes:
-      - featurehub-h2-data:/db
+      - featurehub-h2-data2:/db
     ports:
       - "8085:8085"
+    networks:
+      - extranet
+      - intranet
   doctor-ui:
     image: doctor-ui
     build:
@@ -99,6 +102,7 @@ volumes:
   measurement_data:
   patient_data:
   featurehub-h2-data:
+  featurehub-h2-data2:
   
     
 networks:

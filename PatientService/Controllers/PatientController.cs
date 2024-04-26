@@ -26,21 +26,11 @@ public class PatientController : ControllerBase {
     [HttpPost]
     public async Task<ActionResult<Patient>> CreatePatient(Patient patient)
     {
-
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("Doctor post: " + _clientContext["doctorPost"].IsEnabled);
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
-        Console.WriteLine("");
-
         using var activity = _tracer.StartActiveSpan("CreatePatient");
+        if (_clientContext["createpatient"].IsEnabled)
+        {
+            return StatusCode(418, "Create patient is disabled");
+        }
         var result = await _patientManager.Create(patient);
         
         if (result is null) {
@@ -83,7 +73,10 @@ public class PatientController : ControllerBase {
     [HttpDelete]
     public async Task<IActionResult> DeletePatient(string ssn) {
         var result = await _patientManager.DeleteBySsn(ssn);
-
+        if (_clientContext["deletepatient"].IsEnabled)
+        {
+            return StatusCode(418, "Delete patient is disabled");
+        }
         if (!result) {
             Monitoring.Monitoring.Log.Error("Couldn't delete a patient");
             return BadRequest($"Couldn't delete the patient with ssn: {ssn}");

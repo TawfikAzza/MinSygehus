@@ -30,6 +30,7 @@ public class PatientController : ControllerBase {
         
         if (!_clientContext["createpatient"].IsEnabled)
         {
+            Monitoring.Monitoring.Log.Warning("Create patient is disabled");
             return StatusCode(418, "Create patient is disabled");
         }
         
@@ -76,6 +77,7 @@ public class PatientController : ControllerBase {
     public async Task<IActionResult> DeletePatient(string ssn) {
         if (!_clientContext["deletepatient"].IsEnabled)
         {
+            Monitoring.Monitoring.Log.Warning("Delete patient is disabled");
             return StatusCode(418, "Delete patient is disabled");
         }
         

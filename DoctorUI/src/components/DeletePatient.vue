@@ -35,7 +35,7 @@ const deletePatient = async () => {
 
 <template>
   <section>
-    <label class="error" v-if="isDeletePatientDisabled">Creation of patients is temporarily disabled!</label>
+    <label class="error" v-if="isDeletePatientDisabled">Deletion of patients is temporarily disabled!</label>
     <label for="ssn">SSN:</label>
     <input v-model="ssn" type="text" id="ssn" name="ssn" required>
     <button @click="deletePatient">Delete</button>

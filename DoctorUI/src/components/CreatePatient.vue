@@ -5,6 +5,8 @@ const ssn = ref('');
 const mail = ref('');
 const name = ref('');
 
+const isCreatePatientDisabled = ref(false);
+
 const createPatient = async () => {
   console.log("Creating patient");
   console.log(ssn.value, mail.value, name.value);
@@ -33,6 +35,15 @@ const createPatient = async () => {
 
   //Get the result from the server
   const response = await fetch(requestUrl, request);
+  if (response.status !== 200) {
+    if (response.status === 418) {
+      isCreatePatientDisabled.value = true;
+      return;
+    }
+    isCreatePatientDisabled.value = false;
+
+    console.error(response);
+  }
   const result = await response.json();
   console.log(result);
 }
@@ -40,6 +51,7 @@ const createPatient = async () => {
 
 <template>
   <section>
+    <label class="error" v-if="isCreatePatientDisabled">Creation of patients is temporarily disabled!</label>
     <label for="ssn">SSN:</label>
     <input v-model="ssn" type="text" id="ssn" name="ssn" required>
     <label for="mail">Mail:</label>
@@ -55,5 +67,9 @@ section {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.error {
+  color: red;
 }
 </style>

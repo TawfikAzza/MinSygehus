@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 
+
 const ssn = ref<string>(null);
 const systolic = ref<number>(null);
 const diastolic = ref<number>(null);
